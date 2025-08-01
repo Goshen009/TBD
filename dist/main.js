@@ -2,11 +2,13 @@ import dayjs from 'dayjs';
 import { config } from './config.js';
 import { fetchDB, saveDB } from "./db.js";
 const END_LINE = '========================================';
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 async function main() {
     const log = [];
     const msg = '*************************************************************************************';
     console.log(msg);
     log.push(msg);
+    await sleep(180000); // Pause for 2 seconds
     const data = await fetchDB();
     if (!data) {
         console.log(END_LINE);
