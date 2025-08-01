@@ -1,0 +1,11 @@
+/node_modules
+/vendor
+/src
+.env
+tsconfig.json
+db.json
+before.txt
+/dist/mongo.js
+composer.json
+composer.lock
+main.php
