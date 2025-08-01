@@ -23,10 +23,16 @@ jobs:
         run: npm install
 
       - name: Run Script
-        timeout-minutes: 1
+        timeout-minutes: 5
         run: node dist/main.js
         env:
           TOKEN: ${{ secrets.TOKEN }}
           GIST_ID: ${{ secrets.GIST_ID }}
           TALLY_API_KEY: ${{ secrets.TALLY_API_KEY }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: logs
+          path: log.txt
