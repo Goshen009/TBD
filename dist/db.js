@@ -1,25 +1,39 @@
 import { config } from './config.js';
 export async function fetchDB() {
-    const res = await fetch(`https://api.github.com/gists/${config.gistId}`);
-    const gist = await res.json();
-    return JSON.parse(gist.files['formsDB.json'].content);
+    try {
+        const res = await fetch(`https://api.github.com/gists/${config.gistId}`);
+        const gist = await res.json();
+        return JSON.parse(gist.files['formsDB.json'].content);
+    }
+    catch (err) {
+        const msg = `❌ Network error while fetching from the db: ${err.message}`;
+        console.error(msg);
+        return null;
+    }
 }
 export async function saveDB(data) {
-    const res = await fetch(`https://api.github.com/gists/${config.gistId}`, {
-        method: 'PATCH',
-        headers: {
-            Authorization: `Bearer ${config.token}`,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            files: {
-                ['formsDB.json']: {
-                    content: JSON.stringify(data, null, 2)
+    try {
+        const res = await fetch(`https://api.github.com/gists/${config.gistId}`, {
+            method: 'PATCH',
+            headers: {
+                Authorization: `Bearer ${config.token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                files: {
+                    ['formsDB.json']: {
+                        content: JSON.stringify(data, null, 2)
+                    }
                 }
-            }
-        })
-    });
-    return res.ok;
+            })
+        });
+        return res.ok;
+    }
+    catch (err) {
+        const msg = `❌ Network error while saving to the db: ${err.message}`;
+        console.error(msg);
+        return false;
+    }
 }
 // async function fetchDB() {
 //    const res = await fetch(`https://api.github.com/gists/${GIST_ID}`);

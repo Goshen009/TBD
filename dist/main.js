@@ -8,6 +8,13 @@ async function main() {
     console.log(msg);
     log.push(msg);
     const data = await fetchDB();
+    if (!data) {
+        console.log(END_LINE);
+        log.push(END_LINE);
+        console.log(msg);
+        log.push(msg);
+        return;
+    }
     for (const form of data) {
         const now = dayjs().format('YYYY-MM-DD HH:mm:ss');
         const msg = `===== [${now}] Sync for ${form.username} (${form.chat_id}) (${form.form_id}) =====`;
@@ -42,11 +49,11 @@ async function main() {
             log.push('');
             continue;
         }
-        const vCards = createVCards(submissions, log);
+        const [vCards, details] = createVCards(submissions, log);
         const fileBlob = new Blob([Buffer.from(vCards, 'utf-8')], { type: 'text/vcard' });
         const form_data = new FormData();
         form_data.append('chat_id', form.chat_id);
-        form_data.append('caption', 'Your new contacts are ready!');
+        form_data.append('caption', `Your new contacts are ready!\n\n${details}`);
         form_data.append('document', fileBlob, 'contacts.vcf');
         const telegramResponse = await sendToTelegram(form_data, log);
         if (!telegramResponse) { // there was an error. it has been logged in the function.
@@ -105,6 +112,7 @@ function sanitize(str) {
 }
 function createVCards(submissions, log) {
     let vCards = '';
+    let details = 'Contact Summary\n';
     for (const sub of submissions) {
         const responses = sub.responses;
         const firstName = sanitize(responses[0].answer);
@@ -122,10 +130,11 @@ END:VCARD
         const msg = `Added Contact: ${firstName} ${lastName} | ${phone}`;
         console.log(msg);
         log.push(msg);
+        details += `• ${firstName} ${lastName} — ${phone}\n`;
     }
     console.log('');
     log.push('');
-    return vCards;
+    return [vCards, details];
 }
 async function fetchSubmissions(form, log) {
     try {

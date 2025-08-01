@@ -1,8 +1,11 @@
 name: Activate!
 
 on:
+  schedule:
+    - cron: '0 23 * * *'
+
   workflow_dispatch:
-  repository_dispatch:
+  # repository_dispatch:
 
 jobs:
   run-job:
