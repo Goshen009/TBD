@@ -23,6 +23,7 @@ jobs:
         run: npm install
 
       - name: Run Script
+        timeout-minutes: 1
         run: node dist/main.js
         env:
           TOKEN: ${{ secrets.TOKEN }}
